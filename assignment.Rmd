@@ -1,0 +1,89 @@
+---
+title: "Coding assignment"
+author: "Ajla Dzajic"
+date: "Friday, May 27, 2016"
+output: pdf_document
+---
+
+### Data
+
+For calculating the expected results we're provided with two input files, namely
+
+1. **tickets_sold.csv** - each row contains the booking information for one individual ticket 
+
+2. **row_capacity.csv** - each row contains the maximum capacity for an auditorium_row 
+
+For simplicity, we assume that there is only one auditorium in the cinema that we are looking at.  
+
+
+### Exected results
+
+Our task is to calculate three different results, namely 
+
+1. **Total_tickets_per_week_and_movie**
+
+2. **Seat_load_factor_per_week_and_movie** 
+
+3. **Seat_load_factor_per_week**
+
+
+&nbsp;
+
+
+```{r, warning=FALSE}
+# dir.create("data_assignment")
+# setwd("C:/Users/ajla/Documents/data_assignment")
+
+
+row_capacity <- read.csv("assignment/row_capacity.csv", header = TRUE) 
+tickets_sold <- read.csv("assignment/tickets_sold.csv", header = TRUE)
+
+str(row_capacity)
+str(tickets_sold)
+```
+
+&nbsp;
+
+### Total_tickets_per_week_movie_row 
+
+Aggregate the number of individual tickets per show.
+
+```{r}
+my_var <- tickets_sold[c("ticket_id", "movie", "calendarweek", "auditorium_row")]
+head(my_var)
+ft <- ftable(auditorium_row ~ calendarweek + movie, data = my_var)
+ft
+```
+
+&nbsp;
+
+### Seat_load_factor_per_week_movie_row
+
+Divide the total tickets by the maximum capacity for that particular auditorium_row.
+
+```{r}
+for(i in 1:length(row_capacity$auditorium_row)){
+        ft[, i] <- ft[, i]/row_capacity$max_seats_per_row[row_capacity$auditorium_row == i]
+}
+ft
+```
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+### Seat_load_factor_per_week_row 
+Use the average seat_load_factor over the individual shows per calendarweek.
+
+```{r}
+aggregate(Freq ~ calendarweek + auditorium_row, data = ft, FUN = mean)
+```
+
+
+&nbsp;
+
